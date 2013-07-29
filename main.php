@@ -1,9 +1,11 @@
 <?php
 
+// Define BASE_PATH constant
 if (!defined('BASE_PATH')) {
 	define('BASE_PATH', dirname(__FILE__));
 }
 
+// Autoload classes based on classmap file
 function __autoload($className)
 {
 	$autoloadClassmap = include BASE_PATH . '/autoload_classmap.php';
