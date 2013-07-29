@@ -6,17 +6,26 @@ class Route
 	private $csvPath;
 	private $points = array();
 
+	/**
+	 * Constructor, assings CSV path to $this->csvPath property
+	 * @param type $csvPath
+	 */
 	public function __construct($csvPath)
 	{
 		$this->csvPath = $csvPath;
 	}
 
+	/**
+	 * Parses the CSV file and populates $this->points
+	 * @throws FileNotFoundException
+	 * @return void
+	 */
 	public function parseCsv()
 	{
 		$md5s = array(); // used to remove duplicates
-
+		// Throw an exception if we cannot open a CSV file handle
 		if (FALSE === ($handle = fopen($this->csvPath, 'r'))) {
-			throw new Exception('Could not open CSV handle');
+			throw new FileNotFoundException('Could not open CSV handle');
 		}
 
 		// Factory to create Point objects
@@ -46,6 +55,10 @@ class Route
 		fclose($handle);
 	}
 
+	/**
+	 * Sorst $this->points based on timestamp property
+	 * @return void
+	 */
 	public function sortPointsByTimestamp()
 	{
 		usort(
@@ -55,6 +68,10 @@ class Route
 		);
 	}
 
+	/**
+	 * Gets points
+	 * @return array
+	 */
 	public function getPoints()
 	{
 		return $this->points;

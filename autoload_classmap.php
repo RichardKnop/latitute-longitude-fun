@@ -3,5 +3,6 @@
 return array(
 	'Point' => 'Library/Point.php',
 	'PointFactory' => 'Library/PointFactory.php',
-	'Route' => 'Library/Route.php'
+	'Route' => 'Library/Route.php',
+	'FileNotFoundException' => 'Library/ExceptionFileNotFound.php',
 );
