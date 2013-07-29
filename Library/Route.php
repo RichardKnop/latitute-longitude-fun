@@ -12,6 +12,10 @@ class Route
 	 */
 	public function __construct($csvPath)
 	{
+		if (FALSE === file_exists($csvPath)) {
+			throw new FileNotFoundException('CSV file not found');
+		}
+
 		$this->csvPath = $csvPath;
 	}
 

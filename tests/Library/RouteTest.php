@@ -3,6 +3,15 @@
 class RouteTest extends PHPUnit_Framework_TestCase
 {
 
+	/**
+	 * @expectedException FileNotFoundException
+	 * @expectedExceptionMessage CSV file not found
+	 */
+	public function testConstructorThrowsExceptionIfCsvPathInvalid()
+	{
+		$route = new Route('bogus_path');
+	}
+
 	public function testParseCvRemovesDuplicates()
 	{
 		$route = new Route(BASE_PATH . '/tests/mocks/points.csv');

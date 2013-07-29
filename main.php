@@ -6,11 +6,15 @@ if (!defined('BASE_PATH')) {
 }
 require_once BASE_PATH . '/autoload_classmap.php';
 
-$route = new Route(BASE_PATH . '/points.csv');
-$route->parseCsv();
-$route->sortPointsByTimestamp();
-$buffer = 0.5;
-$route->removeDistantPoints($buffer);
+try {
+	$route = new Route(BASE_PATH . '/points.csv');
+	$route->parseCsv();
+	$route->sortPointsByTimestamp();
+	$buffer = 0.5;
+	$route->removeDistantPoints($buffer);
+} catch (Exception $e) {
+	echo $e->getMessage();
+	exit;
+}
 
 echo print_r($route->getPoints(), true);
-exit;
