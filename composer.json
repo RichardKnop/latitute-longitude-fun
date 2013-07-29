@@ -1,0 +1,11 @@
+{
+    "name": "latitute-longitute-fun",
+    "description": "Latitude / Longitute Fun",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.x-dev#19f1d742e0c36150001062f592c93f80aef3a9fd"
+    }
+}

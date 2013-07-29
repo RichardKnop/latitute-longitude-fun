@@ -69,6 +69,39 @@ class Route
 	}
 
 	/**
+	 * http://en.wikipedia.org/wiki/Haversine_formula
+	 * Calculate the distance between A and B (beginning and end of journey), 
+	 * then iterate over all points and remove those whose distance is larger.
+	 * @return void
+	 */
+	public function removeDistantPoints($buffer)
+	{
+		$haversine = new HaversineFormula();
+
+		// Calculate the distance between A and B (beginning and end of journey)
+		$firstPoint = $this->points[0];
+		$lastPoint = $this->points[count($this->points) - 1];
+		$maxDistance = $haversine->calculateDistance($firstPoint, $lastPoint) + $buffer;
+
+		$filteredPoints = array();
+		array_push($filteredPoints, $firstPoint);
+
+		// Iterate over all points except A and B and filter out those points, 
+		// whose distance from either A or B is greater than A-B distance
+		for ($i = 1; $i < count($this->points) - 1; ++$i) {
+			$point = $this->points[$i];
+			$distanceA = $haversine->calculateDistance($firstPoint, $point);
+			$distanceB = $haversine->calculateDistance($lastPoint, $point);
+			if ($distanceA < $maxDistance && $distanceB < $maxDistance) {
+				array_push($filteredPoints, $point);
+			}
+		}
+
+		array_push($filteredPoints, $lastPoint);
+		$this->points = $filteredPoints;
+	}
+
+	/**
 	 * Gets points
 	 * @return array
 	 */
