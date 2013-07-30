@@ -4,6 +4,7 @@ class Route
 {
 
 	private $csvPath;
+	private $pointMD5s = array(); // used to remove duplicates
 	private $points = array();
 
 	/**
@@ -26,7 +27,6 @@ class Route
 	 */
 	public function parseCsv()
 	{
-		$md5s = array(); // used to remove duplicates
 		// Throw an exception if we cannot open a CSV file handle
 		if (FALSE === ($handle = fopen($this->csvPath, 'r'))) {
 			throw new FileNotFoundException('Could not open CSV handle');
@@ -43,16 +43,11 @@ class Route
 			 * combination, ignore duplicate points
 			 */
 			list($latitude, $longitude, $timestamp) = $data;
-			$md5 = md5($latitude, $longitude);
-			if (FALSE === in_array($md5, $md5s)) {
-				// Store the MD5 to avoid future duplicates
-				array_push($md5s, $md5);
-
-				// Create instance of Point and set its properties
-				$point = $pointFactory->makePoint($latitude, $longitude, $timestamp);
-
+			// Create instance of Point and set its properties
+			$point = $pointFactory->makePoint($latitude, $longitude, $timestamp);
+			if (FALSE === $this->isDuplicate($point)) {
 				// Push the valid point to the array
-				array_push($this->points, $point);
+				$this->addPoint($point);
 			}
 		}
 
@@ -83,8 +78,8 @@ class Route
 		$haversine = new HaversineFormula();
 
 		// Calculate the distance between A and B (beginning and end of journey)
-		$firstPoint = $this->points[0];
-		$lastPoint = $this->points[count($this->points) - 1];
+		$firstPoint = $this->getFirstPoint();
+		$lastPoint = $this->getLastPoint();
 		$maxDistance = $haversine->calculateDistance($firstPoint, $lastPoint) + $buffer;
 
 		$filteredPoints = array();
@@ -112,6 +107,49 @@ class Route
 	public function getPoints()
 	{
 		return $this->points;
+	}
+
+	private function addPoint(Point $point)
+	{
+		array_push($this->points, $point);
+	}
+
+	private function isDuplicate(Point $point)
+	{
+		$md5 = md5($point->getLatitude(), $point->getLongitude());
+		$isDuplicate = in_array($md5, $this->pointMD5s);
+		if (FALSE === $isDuplicate) {
+			// Store the MD5 to avoid future duplicates
+			array_push($this->pointMD5s, $md5);
+		}
+		return $isDuplicate;
+	}
+
+	/**
+	 * Returns number of points in the route
+	 * @return integer
+	 */
+	private function getPointCount()
+	{
+		return count($this->points);
+	}
+
+	/**
+	 * Get the starting point of the journey
+	 * @return \Point
+	 */
+	private function getFirstPoint()
+	{
+		return $this->points[0];
+	}
+
+	/**
+	 * Get the finishing point of the journey
+	 * @return \Point
+	 */
+	private function getLastPoint()
+	{
+		return $this->points[$this->getPointCount() - 1];
 	}
 
 }
