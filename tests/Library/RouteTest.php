@@ -9,7 +9,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testConstructorThrowsExceptionIfCsvPathInvalid()
 	{
-		$route = new Route('bogus_path');
+		new Route('bogus_path');
 	}
 
 	public function testParseCvRemovesDuplicates()
