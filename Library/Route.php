@@ -75,29 +75,9 @@ class Route
 	 */
 	public function removeDistantPoints($buffer)
 	{
-		$haversine = new HaversineFormula();
+		$filterStrategyContext = new FilterStrategyContext('haversine');
 
-		// Calculate the distance between A and B (beginning and end of journey)
-		$firstPoint = $this->getFirstPoint();
-		$lastPoint = $this->getLastPoint();
-		$maxDistance = $haversine->calculateDistance($firstPoint, $lastPoint) + $buffer;
-
-		$filteredPoints = array();
-		array_push($filteredPoints, $firstPoint);
-
-		// Iterate over all points except A and B and filter out those points, 
-		// whose distance from either A or B is greater than A-B distance
-		for ($i = 1; $i < count($this->points) - 1; ++$i) {
-			$point = $this->points[$i];
-			$distanceA = $haversine->calculateDistance($firstPoint, $point);
-			$distanceB = $haversine->calculateDistance($lastPoint, $point);
-			if ($distanceA < $maxDistance && $distanceB < $maxDistance) {
-				array_push($filteredPoints, $point);
-			}
-		}
-
-		array_push($filteredPoints, $lastPoint);
-		$this->points = $filteredPoints;
+		$this->points = $filterStrategyContext->filterPoints($this->points, $buffer);
 	}
 
 	/**
@@ -123,33 +103,6 @@ class Route
 			array_push($this->pointMD5s, $md5);
 		}
 		return $isDuplicate;
-	}
-
-	/**
-	 * Returns number of points in the route
-	 * @return integer
-	 */
-	private function getPointCount()
-	{
-		return count($this->points);
-	}
-
-	/**
-	 * Get the starting point of the journey
-	 * @return \Point
-	 */
-	private function getFirstPoint()
-	{
-		return $this->points[0];
-	}
-
-	/**
-	 * Get the finishing point of the journey
-	 * @return \Point
-	 */
-	private function getLastPoint()
-	{
-		return $this->points[$this->getPointCount() - 1];
 	}
 
 }
